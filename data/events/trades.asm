@@ -7,7 +7,7 @@ TradeMons:
 	; Japanese Red and Green used TRADE_DIALOGSET_CASUAL, and had
 	; the same species as English Red and Blue.
 	db LICKITUNG,  DUGTRIO,  TRADE_DIALOGSET_CASUAL,    "GURIO@@@@@@"
-	db CLEFAIRY,   MR_MIME,  TRADE_DIALOGSET_CASUAL,    "MILES@@@@@@"
+	db ABRA,   MR_MIME,  TRADE_DIALOGSET_CASUAL,    "MILES@@@@@@" ; make mime harder(but still possible should someone want to) to acquire to balance the game a bit.
 	db BUTTERFREE, BEEDRILL, TRADE_DIALOGSET_HAPPY,     "STINGER@@@@" ; unused
 	db KANGASKHAN, MUK,      TRADE_DIALOGSET_CASUAL,    "STICKY@@@@@"
 	db MEW,        MEW,      TRADE_DIALOGSET_HAPPY,     "BART@@@@@@@" ; unused
