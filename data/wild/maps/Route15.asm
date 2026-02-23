@@ -1,15 +1,15 @@
 Route15WildMons:
-	def_grass_wildmons 15 ; encounter rate
-	db 26, ODDISH
-	db 26, BELLSPROUT
-	db 24, VENONAT
-	db 32, PIDGEOTTO
-	db 28, ODDISH
-	db 28, BELLSPROUT
-	db 30, GLOOM
-	db 30, WEEPINBELL
-	db 30, VENOMOTH
-	db 34, VENOMOTH
+	def_grass_wildmons 15 ; encounter rate JOONAS CHANGED THE WHOLE ENCOUNTER TABLE
+        db 27, ODDISH
+        db 28, RATTATA
+        db 31, PERSIAN
+        db 32, ARBOK
+        db 31, PONYTA
+        db 32, HYPNO
+        db 31, GLOOM
+        db 32, RATICATE
+        db 36, RAPIDASH
+        db 25, CHARMELEON
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

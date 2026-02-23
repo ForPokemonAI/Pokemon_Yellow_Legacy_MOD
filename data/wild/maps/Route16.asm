@@ -1,15 +1,15 @@
 Route16WildMons:
-	def_grass_wildmons 25 ; encounter rate
-	db 22, SPEAROW
-	db 22, DODUO
-	db 23, RATTATA
+	def_grass_wildmons 25 ; encounter rate JOONAS CHANGED THE WHOLE ENCOUNTER TABLE
+	db 22, RATTATA
+	db 24, RATICATE
+	db 23, DODUO
+	db 24, BEEDRILL
+	db 24, BUTTERFREE
+	db 26, MEOWTH
 	db 24, DODUO
-	db 24, GRIMER
-	db 26, DODUO
-	db 23, SPEAROW
-	db 24, FEAROW
-	db 25, RATICATE
-	db 26, RATICATE
+	db 24, FARFETCHD
+	db 25, GRIMER
+	db 26, SCYTHER
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

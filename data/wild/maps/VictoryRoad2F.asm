@@ -1,7 +1,7 @@
 VictoryRoad2FWildMons:
-	def_grass_wildmons 10 ; encounter rate
+	def_grass_wildmons 10 ; encounter rate JOONAS CHANGED THE WHOLE ENCOUNTER TABLE
 	db 46, GRAVELER
-	db 42, RHYHORN
+	db 42, GOLBAT
 	db 45, GRAVELER
 	db 46, MACHAMP
 	db 44, GOLBAT
