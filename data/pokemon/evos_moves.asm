@@ -483,11 +483,13 @@ ArcanineEvosMoves:
 ; Evolutions
 	db 0
 ; Learnset
+	db 7, LICK
+	db 12, ROAR
 	db 18, EMBER
 	db 23, LEER
 	db 30, TAKE_DOWN
-	db 45, FLAMETHROWER
-	db 46, AGILITY
+	db 35, FLAMETHROWER
+	db 42, AGILITY
 	db 0
 
 MewEvosMoves:
@@ -657,17 +659,20 @@ GrowlitheEvosMoves:
 	db EVOLVE_ITEM, FIRE_STONE, 1, ARCANINE
 	db 0
 ; Learnset
+	db 7, LICK
+	db 12, ROAR
 	db 18, EMBER
 	db 23, LEER
 	db 30, TAKE_DOWN
 	db 35, FLAMETHROWER
-	db 36, AGILITY
+	db 42, AGILITY
 	db 0
 
 OnixEvosMoves:
 ; Evolutions
 	db 0
 ; Learnset
+    db 7, CONSTRICT
 	db 12, ROCK_THROW
 	db 19, DIG
 	db 25, RAGE
@@ -858,7 +863,7 @@ PsyduckEvosMoves:
 	db 15, CONFUSION
 	db 17, BUBBLEBEAM
 	db 23, SCREECH
-	db 40, FURY_SWIPES
+	db 33, FURY_SWIPES
 	db 42, PSYCHIC_M
 	db 45, AMNESIA
 	db 50, HYDRO_PUMP
@@ -1206,6 +1211,9 @@ KrabbyEvosMoves:
 	db EVOLVE_LEVEL, 28, KINGLER
 	db 0
 ; Learnset
+        db 7, TACKLE
+        db 11, LEER
+        db 16, SHARPEN
 	db 20, VICEGRIP
 	db 25, BUBBLEBEAM
 	db 29, CUT
@@ -1593,7 +1601,7 @@ EkansEvosMoves:
 	db EVOLVE_LEVEL, 22, ARBOK
 	db 0
 ; Learnset
-	db 9,  POISON_STING
+	db 5,  POISON_STING ; Used to be 9, dropped for lower level encounter
 	db 12, BITE
 	db 15, ACID
 	db 22, SUBSTITUTE
@@ -1754,7 +1762,6 @@ DewgongEvosMoves:
 	db 32, TAKE_DOWN
 	db 40, ICE_BEAM
 	db 50, BLIZZARD
-	db 0
 
 MissingNo79EvosMoves:
 ; Evolutions
@@ -1778,6 +1785,7 @@ CaterpieEvosMoves:
 MetapodEvosMoves:
 ; Evolutions
 	db EVOLVE_LEVEL, 10, BUTTERFREE
+	db 7, HARDEN
 	db 0
 ; Learnset
 	db 7, HARDEN
@@ -1827,7 +1835,7 @@ GolduckEvosMoves:
 	db 15, CONFUSION
 	db 17, BUBBLEBEAM
 	db 23, SCREECH
-	db 40, FURY_SWIPES
+	db 33, FURY_SWIPES
 	db 42, PSYCHIC_M
 	db 45, AMNESIA
 	db 50, HYDRO_PUMP
@@ -2536,7 +2544,8 @@ BellsproutEvosMoves:
 	db EVOLVE_LEVEL, 21, WEEPINBELL
 	db 0
 ; Learnset
-	db 13, POISONPOWDER
+	db 7, POISONPOWDER
+	db 13, VINE_WHIP ; added here for the lower level encounter
 	db 21, STUN_SPORE
 	db 25, ACID
 	db 27, HEADBUTT
