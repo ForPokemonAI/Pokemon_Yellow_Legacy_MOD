@@ -158,8 +158,9 @@ CalcStat::
 	jr nc, .noCarry
 	inc d                     ; de = Base + IV
 .noCarry
-	sla e
+	sla e;commenting out this line would nerf IVs to 15 at level 100. It's a possibility but as most trainers have 9/8/8/8 IVs it should not be needed.
 	rl d                      ; de = (Base + IV) * 2
+	srl b; ADDED TO DIVIDE BY 8 INSTEAD OF 4 TO BALANCE OUT STATEXP, now equals IVs
 	srl b
 	srl b                     ; b = ceil(Sqrt(stat exp)) / 4
 	ld a, b
