@@ -10,7 +10,7 @@ Pokemon availability changes:
 - Mr Mime trader now wants Abra instead of Clefairy
 - Celadon Mansion now has Porygon instead of Eevee
 - Game corner now sells Magmar(1500), Electabuzz(2000), Mr Mime(2500), Dratini(5000),  Eevee(9999), Porygon(3000)
-- Eevee as starter(but cries and animations not changed)
+- Eevee as starter(but cries and animations not changed, zuperZach has done cries/animations but I did not find permissions in his branch to use them here)
 - Starter can evolve if you meet the criteria(removes the on map pokemon)
 
 Move changes:
