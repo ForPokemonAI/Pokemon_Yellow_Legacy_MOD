@@ -1,15 +1,15 @@
 RockTunnelB1FWildMons:
-	def_grass_wildmons 15 ; encounter rate
-	db 20, ZUBAT
-	db 17, GEODUDE
-	db 18, MACHOP
-	db 21, ZUBAT
-	db 22, ZUBAT
-	db 21, GEODUDE
-	db 20, MACHOP
-	db 17, ONIX
-	db 18, ONIX
-	db 22, ONIX
+	def_grass_wildmons 15 ; encounter rate JOONAS CHANGED THE WHOLE ENCOUNTER TABLE
+    db 20, ZUBAT
+    db 21, GEODUDE
+    db 18, MACHOP
+    db 21, ZUBAT
+    db 22, GEODUDE
+    db 22, GOLBAT
+    db 20, ZUBAT
+    db 24, GEODUDE
+    db 23, ONIX
+    db 19, GASTLY
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

@@ -1,15 +1,15 @@
 Route5WildMons:
-	def_grass_wildmons 15 ; encounter rate
-	db 15, MEOWTH
-	db 14, RATTATA
-	db 13, ABRA
-	db 16, FARFETCHD
+	def_grass_wildmons 15 ; encounter rate  JOONAS CHANGED THE WHOLE ENCOUNTER TABLE
+	db 15, RATTATA
+	db 14, PIDGEY
+	db 13, MEOWTH
+	db 16, PIDGEY
 	db 16, RATTATA
-	db 17, PIDGEY
-	db 17, PIDGEOTTO
-	db 13, JIGGLYPUFF
-	db 15, JIGGLYPUFF
-	db 17, JIGGLYPUFF
+	db 17, MEOWTH
+	db 17, RATTATA
+	db 13, PIDGEY
+	db 15, VOLTORB
+	db 13, ABRA
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

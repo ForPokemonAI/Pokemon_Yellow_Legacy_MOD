@@ -1,15 +1,15 @@
 Route14WildMons:
-	def_grass_wildmons 15 ; encounter rate
-	db 26, ODDISH
-	db 26, BELLSPROUT
-	db 24, WEEPINBELL
-	db 30, PIDGEOTTO
-	db 28, GLOOM
-	db 28, SCYTHER
+	def_grass_wildmons 15 ; encounter rate JOONAS CHANGED THE WHOLE ENCOUNTER TABLE
+	db 27, ODDISH
+	db 26, SPEAROW
+	db 30, SANDSLASH
+	db 30, ARBOK
+	db 30, SCYTHER
+	db 31, TANGELA
 	db 30, GLOOM
-	db 28, VENONAT
-	db 27, VENONAT
-	db 33, VENOMOTH
+	db 31, FEAROW
+	db 34, RHYHORN
+	db 33, TAUROS
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

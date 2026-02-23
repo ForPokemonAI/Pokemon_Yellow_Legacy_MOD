@@ -1,15 +1,15 @@
 Route8WildMons:
-	def_grass_wildmons 15 ; encounter rate
-	db 20, GROWLITHE
-	db 22, PIDGEY
-	db 20, RATTATA
-	db 17, ABRA
-	db 18, ABRA
-	db 24, PIDGEOTTO
-	db 19, ABRA
-	db 24, JIGGLYPUFF
-	db 24, KADABRA
-	db 28, KADABRA
+	def_grass_wildmons 15 ; encounter  JOONAS CHANGED THE WHOLE ENCOUNTER TABLE
+    db 22, RATTATA
+    db 22, ODDISH
+    db 23, KOFFING
+    db 24, RATICATE
+    db 23, ODDISH
+    db 24, GROWLITHE
+    db 24, RATICATE
+    db 25, GLOOM
+    db 15, ABRA
+    db 15, EEVEE
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

@@ -952,15 +952,16 @@ _LinkBattleLostText::
 	text "!"
 	prompt
 
-_TrainerAboutToUseText::
-	text_ram wTrainerName
-	text " is"
-	line "about to use"
-	cont "@"
-	text_ram wEnemyMonNick
-	text "!"
+_TrainerAboutToUseText:: ; We want to remove the hint about what pokemon comes out next to make using SHIFT okay
+;	text_ram wTrainerName
+;	text " is"
+;	line "about to use"
+;	cont "@"
+;	text_ram wEnemyMonNick
+;	text "!"
 
-	para "Will <PLAYER>"
+;	para "Will <PLAYER>" 
+	text "Will <PLAYER>"
 	line "change #MON?"
 	done
 

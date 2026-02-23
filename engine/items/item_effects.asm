@@ -824,6 +824,9 @@ ItemUseEvoStone:
 	jr nc, .noEffect
 	callfar IsThisPartymonStarterPikachu_Party
 	jr nc, .notPlayerPikachu
+	ld a, [wPikachuHappiness] ; Check if happiness high enough to allow evolution stone
+	cp 200 ; Check if happiness at least 200
+	jr nc, .notPlayerPikachu ; If it is, same result as not being your starter --> Let evolve(will lose Pikachu special overworld/sounds)
 	ld e, $1b
 	callfar PlayPikachuSoundClip
 	ld a, [wWhichPokemon]
@@ -2023,63 +2026,22 @@ CoinCaseNumCoinsText:
 ItemUseOldRod:
 	call FishingInit
 	jp c, ItemUseNotTime
-.RandomLoop
-	call Random
-	srl a
-	jr c, .SetBite
-	and %11
-	cp 2
-	jr nc, .RandomLoop
-	; choose which monster appears
-	ld hl, OldRodMons
-	add a
-	ld c, a
-	ld b, 0
-	add hl, bc
-	ld b, [hl]
-	inc hl
-	ld c, [hl]
-	and a
-.SetBite
-	ld a, 0
-	rla
-	xor 1
-	jr RodResponse
-
-INCLUDE "data/wild/old_rod.asm"
-
+	callfar ReadOldRodData
+	jr UseRod
+	
 ItemUseGoodRod:
 	call FishingInit
 	jp c, ItemUseNotTime
-.RandomLoop
-	call Random
-	srl a
-	jr c, .SetBite
-	and %11
-	cp 2
-	jr nc, .RandomLoop
-	; choose which monster appears
-	ld hl, GoodRodMons
-	add a
-	ld c, a
-	ld b, 0
-	add hl, bc
-	ld b, [hl]
-	inc hl
-	ld c, [hl]
-	and a
-.SetBite
-	ld a, 0
-	rla
-	xor 1
-	jr RodResponse
-
-INCLUDE "data/wild/good_rod.asm"
+	callfar ReadGoodRodData
+	jr UseRod
 
 ItemUseSuperRod:
 	call FishingInit
 	jp c, ItemUseNotTime
 	callfar ReadSuperRodData
+	jr UseRod
+	
+UseRod:
 	ld c, e
 	ld b, d
 	ld a, $2
@@ -3184,15 +3146,24 @@ CheckMapForMon:
 .loop
 	ld a, [wd11e]
 	cp [hl]
-	jr nz, .nextEntry
-	ld a, c
-	ld [de], a
-	inc de
+	jr z, .foundOnMap
 .nextEntry
 	inc hl
 	inc hl
 	dec b
 	jr nz, .loop
+	dec hl
+	ret
+	
+.foundOnMap	
+	ld a, c ; separated to not mark the map more than once
+	ld [de], a
+	inc de
+.finishLoop
+	inc hl
+	inc hl
+	dec b
+	jr nz, .finishLoop
 	dec hl
 	ret
 
@@ -3212,8 +3183,6 @@ AddStaticEncounters: ; manually add gift mons, static encounters and fossil loca
 	jp z, .addEncounter
 	cp SNORLAX
 	jp z, .addSnorlax
-	cp EEVEE
-	jp z, .addCeladon
 	cp LAPRAS
 	jp z, .addSaffron
 	cp OMANYTE
@@ -3264,17 +3233,17 @@ AddStaticEncounters: ; manually add gift mons, static encounters and fossil loca
 	cp JYNX
 	jr z, .addSaffron
 	; game corner mons 
-	cp ABRA
+	cp PORYGON
 	jr z, .addCeladon
-	cp SEEL
-	jr z, .addCeladon
-	cp MAGMAR
-	jr z, .addCeladon
-	cp ELECTABUZZ
+	cp EEVEE
 	jr z, .addCeladon
 	cp DRATINI
 	jr z, .addCeladon
-	cp PORYGON
+	cp ELECTABUZZ
+	jr z, .addCeladon
+	cp MAGMAR
+	jr z, .addCeladon
+	cp MR_MIME
 	jr z, .addCeladon
 	ret
 .addEncounter

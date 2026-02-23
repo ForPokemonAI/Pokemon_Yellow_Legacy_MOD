@@ -1,15 +1,15 @@
 SeafoamIslands1FWildMons:
-	def_grass_wildmons 15 ; encounter rate
-	db 25, ZUBAT
-	db 30, KRABBY
-	db 32, KRABBY
-	db 33, GOLBAT
-	db 35, GOLBAT
-	db 32, SLOWPOKE
-	db 35, SLOWPOKE
-	db 32, GOLBAT
-	db 35, JYNX
-	db 36, JYNX
+	def_grass_wildmons 15 ; encounter rate JOONAS CHANGED THE WHOLE ENCOUNTER TABLE
+        db 30, GOLBAT
+        db 30, KINGLER
+        db 32, KINGLER
+        db 33, GOLBAT
+        db 35, KINGLER
+        db 32, SLOWPOKE
+        db 35, SLOWPOKE
+        db 32, GOLBAT
+        db 35, JYNX
+        db 36, DRAGONAIR
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

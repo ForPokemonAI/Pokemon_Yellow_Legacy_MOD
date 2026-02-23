@@ -10,7 +10,7 @@
 	INCBIN "gfx/pokemon/front/bellsprout.pic", 0, 1 ; sprite dimensions
 	dw BellsproutPicFront, BellsproutPicBack
 
-	db GROWTH, VINE_WHIP, NO_MOVE, NO_MOVE ; level 1 learnset
+	db GROWTH, CONSTRICT, NO_MOVE, NO_MOVE ; level 1 learnset, JOONAS removed vine_whip from start to balance viridian encounter
 	db GROWTH_MEDIUM_SLOW ; growth rate
 
 	; tm/hm learnset
