@@ -288,8 +288,8 @@ GainExperience:
 	call CallBattleCore
 	ld hl, ApplyBurnAndParalysisPenaltiesToPlayer
 	call CallBattleCore
-	ld hl, ApplyBadgeStatBoosts
-	call CallBattleCore
+;	ld hl, ApplyBadgeStatBoosts ;remove badge boosts since we can now evolve starter, also incidentally gets rid of the glitch
+;	call CallBattleCore ;remove badge boosts since we can now evolve starter, also incidentally gets rid of the glitch
 	ld hl, DrawPlayerHUDAndHPBar
 	call CallBattleCore
 	ld hl, PrintEmptyString

@@ -1735,7 +1735,7 @@ LoadBattleMonFromParty:
 	ld bc, 1 + NUM_STATS * 2
 	call CopyData
 	call ApplyBurnAndParalysisPenaltiesToPlayer
-	call ApplyBadgeStatBoosts
+;	call ApplyBadgeStatBoosts ;remove badge boosts(no longer needed due to evolving starter and incidentally get rid of the glitch)
 	ld a, $7 ; default stat modifier
 	ld b, NUM_STAT_MODS
 	ld hl, wPlayerMonAttackMod
@@ -2585,8 +2585,55 @@ PartyMenuOrRockOrRun:
 .notAlreadyOut
 	call HasMonFainted
 	jp z, .partyMonDeselected ; can't switch to fainted mon
+	;;;;;;;;; PureRGBnote: ADDED: set previous type and status indicators so the AI doesn't use super effective moves or status moves cheaply 
+	;;;;;;;;;           against the pokemon we just sent out when we switch using a turn up
+	ld a, [wBattleMonType1]
+	ld [wAITargetMonType1], a 
+	ld a, [wBattleMonType2]
+	ld [wAITargetMonType2], a 
+	ld a, [wBattleMonStatus]
+	ld [wAITargetMonStatus], a
+	;;;;;;;;;
+	;Joonas: load hp, defense, special, speed, attack, type and status 3 into temporary buffer too
+	ld a, [wBattleMonHP] ; read current hp high byte
+	ld [wBuffer + 16], a ; we borrow this for storing the hp
+	ld a, [wBattleMonHP + 1] ; read current hp low byte
+	ld [wBuffer + 17], a ; we borrow this for storing the hp
+	ld a, [wBattleMonDefense] ; read current defense high byte
+	ld [wBuffer + 28], a ; we borrow this for storing defense
+	ld a, [wBattleMonDefense + 1] ; read current defense low byte
+	ld [wBuffer + 29], a ; we borrow this for storing defense
+	ld a, [wBattleMonSpecial] ; read current special high byte
+	ld [wBuffer + 26], a ; we borrow this for storing special
+	ld a, [wBattleMonSpecial + 1] ; read current special low byte
+	ld [wBuffer + 27], a ; we borrow this for storing special
+	ld a, [wBattleMonSpeed] ; read current speed high byte
+	ld [wBuffer + 24], a ; we borrow this for storing speed
+	ld a, [wBattleMonSpeed + 1] ; read current speed low byte
+	ld [wBuffer + 25], a ; we borrow this for storing speed
+	ld a, [wBattleMonAttack] ; read current attack high byte
+	ld [wBuffer + 22], a ; we borrow this for storing attack
+	ld a, [wBattleMonAttack + 1] ; read current attack low byte
+	ld [wBuffer + 23], a ; we borrow this for storing attack
+	ld a, [wPlayerBattleStatus3] ; read current status3
+	ld [wBuffer + 20], a ; we borrow this for storing status3
+	ld a, [wPlayerBattleStatus2] ; read current status2
+	ld [wBuffer + 21], a ; we borrow this for storing status2
+	ld a, [wPlayerMonNumber]
+	ld [wBuffer + 18], a ; we borrow this for storing status3
+	ld a, [wPlayerBattleStatus1]
+	ld [wBuffer + 15], a ; we borrow this for storing status1
+	ld a, [wBattleMonMaxHP] ; read current hp high byte
+	ld [wBuffer + 13], a ; we borrow this for storing the hp
+	ld a, [wBattleMonMaxHP + 1] ; read current hp low byte
+	ld [wBuffer + 14], a ; we borrow this for storing the hp
+	;;;;;;;;
 	ld a, $1
 	ld [wActionResultOrTookBattleTurn], a
+	;;;;;;;;; PureRGBnote: ADDED: helps avoid ai spamming as if they predict you switching pokemon perfectly
+	;;;;;;;;; it was added here vs lower in SwitchPlayerMon because SwitchPlayerMon is also used in the case of in Shift game mode switching
+	inc a ; 2 = player switched pokemon this turn
+	ld [wAIMoveSpamAvoider], a 
 	call GBPalWhiteOut
 	call ClearSprites
 	call LoadHudTilePatterns
@@ -3171,7 +3218,7 @@ SelectEnemyMove:
 	cp LINKBATTLE_NO_ACTION
 	jr z, .unableToSelectMove
 	cp 4
-	ret nc
+	jr nc, .return ; go clear switch status and return
 	ld [wEnemyMoveListIndex], a
 	ld c, a
 	ld hl, wEnemyMonMoves
@@ -3182,17 +3229,17 @@ SelectEnemyMove:
 .noLinkBattle
 	ld a, [wEnemyBattleStatus2]
 	and (1 << NEEDS_TO_RECHARGE) | (1 << USING_RAGE) ; need to recharge or using rage
-	ret nz
+	jr nz, .return ; go clear switch status and return
 	ld hl, wEnemyBattleStatus1
 	ld a, [hl]
 	and (1 << CHARGING_UP) | (1 << THRASHING_ABOUT) ; using a charging move or thrash/petal dance
-	ret nz
+	jr nz, .return ; go clear switch status and return
 	ld a, [wEnemyMonStatus]
 	and (1 << FRZ) | SLP_MASK
-	ret nz
+	jr nz, .return ; go clear switch status and return
 	ld a, [wEnemyBattleStatus1]
 	and (1 << USING_TRAPPING_MOVE) | (1 << STORING_ENERGY) ; using a trapping move like wrap or bide
-	ret nz
+	jr nz, .return ; go clear switch status and return
 	ld a, [wPlayerBattleStatus1]
 	bit USING_TRAPPING_MOVE, a ; caught in player's trapping move (e.g. wrap)
 	jr z, .canSelectMove
@@ -3244,6 +3291,28 @@ SelectEnemyMove:
 	jr z, .chooseRandomMove ; move non-existant, try again
 .done
 	ld [wEnemySelectedMove], a
+.return ; reset player mon switch status here instead of in trainer ai to take locked enemy turns into account
+	xor a ; reset player mon switch status
+	ld [wAIMoveSpamAvoider], a ; reset player mon switch marker
+	ld [wAITargetMonStatus], a ; reset player mon switch status
+	ld [wAITargetMonType1], a  ; reset player mon switch type1
+	ld [wAITargetMonType2], a  ; reset player mon switch type2
+	ld [wBuffer + 28], a ; reset stored defense
+	ld [wBuffer + 29], a ; reset stored defense
+	ld [wBuffer + 26], a ; reset stored special
+	ld [wBuffer + 27], a ; reset stored special
+	ld [wBuffer + 24], a ; reset stored speed
+	ld [wBuffer + 25], a ; reset stored speed
+	ld [wBuffer + 22], a ; reset stored attack
+	ld [wBuffer + 23], a ; reset stored attack
+	ld [wBuffer + 20], a ; reset stored status3
+	ld [wBuffer + 21], a ; reset stored status2
+    ld [wBuffer + 18], a ; reset stored player monster number
+	ld [wBuffer + 16], a ; reset stored the hp
+	ld [wBuffer + 17], a ; reset stored the hp
+	ld [wBuffer + 15], a ; reset stored status1
+	ld [wBuffer + 14], a ; reset stored the max hp
+	ld [wBuffer + 13], a ; reset stored the max hp
 	ret
 .linkedOpponentUsedStruggle
 	ld a, STRUGGLE
@@ -4363,6 +4432,8 @@ GetDamageVarsForPlayerAttack:
 	ld d, a ; d = move power
 	ret z ; return if move power is zero
 	ld a, [hl] ; a = [wPlayerMoveType]
+	cp DRAGON ; We change Dragon to use physical attack type here
+	jr z, .physicalAttack ; We change Dragon to use physical attack type here
 	cp SPECIAL ; types >= SPECIAL are all special
 	jr nc, .specialAttack
 .physicalAttack
@@ -4476,14 +4547,24 @@ GetDamageVarsForEnemyAttack:
 	and a
 	ret z ; return if move power is zero
 	ld a, [hl] ; a = [wEnemyMoveType]
+	cp DRAGON ; We change Dragon to use physical attack type here
+	jr z, .physicalAttack ; We change Dragon to use physical attack type here
 	cp SPECIAL ; types >= SPECIAL are all special
 	jr nc, .specialAttack
 .physicalAttack
-	ld hl, wBattleMonDefense
+    ld a, [wBuffer + 19] ; check for calculation only
+    cp 1 ; set to one if yes
+    jr nz, .fullAttack
+    ld a, [wAIMoveSpamAvoider] ; check if switched pokemon
+    cp 2 ; set to two if switched
+    jr z, .readPreviousDefense ; read old defense if switched    
+.fullAttack ; regular calculation
+	ld hl, wBattleMonDefense ; else read current
 	ld a, [hli]
 	ld b, a
 	ld c, [hl] ; bc = player defense
 	ld a, [wPlayerBattleStatus3]
+.physical
 	bit HAS_REFLECT_UP, a ; check for Reflect
 	jr z, .physicalAttackCritCheck
 ; if the player has used Reflect, double the player's defense
@@ -4493,10 +4574,18 @@ GetDamageVarsForEnemyAttack:
 	ld hl, wEnemyMonAttack
 	ld a, [wCriticalHitOrOHKO]
 	and a ; check for critical hit
-	jr z, .scaleStats
+	jp z, .scaleStats
+	ld a, [wBuffer + 19] ; check for calculation only
+    cp 1 ; set to one if yes
+    jr nz, .regularPhysicalCrit
+    ld a, [wAIMoveSpamAvoider] ; check if switched pokemon
+    cp 2 ; set to two if switched
+    jr z, .readPreviousMonForPhysical ; read old defense if switched    
 ; in the case of a critical hit, reset the player's defense and the enemy's attack to their base values
-	ld hl, wPartyMon1Defense
+.regularPhysicalCrit
 	ld a, [wPlayerMonNumber]
+.calcPhysicalCrit
+	ld hl, wPartyMon1Defense
 	ld bc, wPartyMon2 - wPartyMon1
 	call AddNTimes
 	ld a, [hli]
@@ -4508,12 +4597,33 @@ GetDamageVarsForEnemyAttack:
 	ld hl, hProduct + 2
 	pop bc
 	jr .scaleStats
+	
+.readPreviousDefense	; read previous defense values
+	ld a, [wBuffer + 28]
+	ld b, a
+	ld a, [wBuffer + 29]
+	ld c, a ; bc = old player defense
+	ld a, [wBuffer + 20]
+	jr .physical	
+	
+.readPreviousMonForPhysical
+	ld a, [wBuffer + 18] ; load previous monster number
+	jr .calcPhysicalCrit
+	
 .specialAttack
-	ld hl, wBattleMonSpecial
+    ld a, [wBuffer + 19] ; check for calculation only
+    cp 1 ; set to one if yes
+    jr nz, .fullSpecial
+    ld a, [wAIMoveSpamAvoider] ; check if switched pokemon
+    cp 2 ; set to two if switched
+    jr z, .readPreviousSpecial ; read old special if switched    
+.fullSpecial ; regular calculation
+	ld hl, wBattleMonSpecial ; else read current special
 	ld a, [hli]
 	ld b, a
 	ld c, [hl]
 	ld a, [wPlayerBattleStatus3]
+.special
 	bit HAS_LIGHT_SCREEN_UP, a ; check for Light Screen
 	jr z, .specialAttackCritCheck
 ; if the player has used Light Screen, double the player's special
@@ -4526,9 +4636,17 @@ GetDamageVarsForEnemyAttack:
 	ld a, [wCriticalHitOrOHKO]
 	and a ; check for critical hit
 	jr z, .scaleStats
-; in the case of a critical hit, reset the player's and enemy's specials to their base values
-	ld hl, wPartyMon1Special
+	ld a, [wBuffer + 19] ; check for calculation only
+    cp 1 ; set to one if yes
+    jr nz, .regularSpecialCrit
+    ld a, [wAIMoveSpamAvoider] ; check if switched pokemon
+    cp 2 ; set to two if switched
+    jr z, .readPreviousMonForSpecial ; read old defense if switched    
+; in the case of a critical hit, reset the player's defense and the enemy's attack to their base values
+.regularSpecialCrit
 	ld a, [wPlayerMonNumber]
+.calcSpecialCrit
+	ld hl, wPartyMon1Special
 	ld bc, wPartyMon2 - wPartyMon1
 	call AddNTimes
 	ld a, [hli]
@@ -4577,6 +4695,18 @@ GetDamageVarsForEnemyAttack:
 	and a
 	and a
 	ret
+
+.readPreviousSpecial	
+	ld a, [wBuffer + 26]; else read previous value
+	ld b, a
+	ld a, [wBuffer + 27] ; bc = player special
+	ld c, a
+	ld a, [wBuffer + 20]
+	jr .special
+	
+.readPreviousMonForSpecial
+	ld a, [wBuffer + 18] ; load previous monster number
+	jr .calcSpecialCrit
 
 ; get stat c of enemy mon
 ; c: stat to get (STAT_* constant)
@@ -5433,7 +5563,15 @@ AdjustDamageForMoveType:
 	ld a, [hli]
 	ld b, a    ; b = type 1 of attacker
 	ld c, [hl] ; c = type 2 of attacker
-	ld hl, wBattleMonType
+	ld a, [wBuffer + 19] ; check for AI calculation marker
+	cp 1 ; 1 is set
+	jr nz, .playerMonType ; if not proceed as normal
+	ld a, [wAIMoveSpamAvoider] ; check if player switched
+	cp 2 ; two if switched
+	jr z, .loadPreswitchTypes ; go load preswitch types instead if switched
+.playerMonType	
+	ld hl, wBattleMonType ; else load current types
+.loadMoveType
 	ld a, [hli]
 	ld d, a    ; d = type 1 of defender
 	ld e, [hl] ; e = type 2 of defender
@@ -5446,6 +5584,11 @@ AdjustDamageForMoveType:
 	cp c ; does the move type match type 2 of the attacker?
 	jr z, .sameTypeAttackBonus
 	jr .skipSameTypeAttackBonus
+	
+.loadPreswitchTypes; load preswitch 
+	ld hl, wAITargetMonType1
+	jr .loadMoveType
+	
 .sameTypeAttackBonus
 ; if the move type matches one of the attacker's types
 	ld hl, wDamage + 1
@@ -5541,41 +5684,228 @@ AdjustDamageForMoveType:
 .done
 	ret
 
+	;start of added section	
+
+CalcAIMoveDamage:    ; this will return the wDamage as current move damage and carry if a knockout shot.
+    xor a
+	ld [wCriticalHitOrOHKO], a
+	ld a, $01 ; reset turn to opponent turn temporarily
+	ld [hWhoseTurn], a
+	ld a, [wEnemyMovePower]
+	cp 1 ; check for move power of 1
+	jp z, .checkSpecialDamage ; if 1, go check special damage
+	ld a, [wEnemyMoveNum] ; check for high critical hit moves
+	ld c, a
+	ld hl, HighCriticalMoves     ; table of high critical hit moves
+.Loop
+	ld a, [hli]                  ; read move from move table
+	cp c                         ; does it match the move about to be used?
+	jr z, .HighCriticalMove         ; if so, the move about to be used is a high critical hit ratio move
+	inc a                        ; move on to the next move, FF terminates loop
+	jr nz, .Loop                 ; check the next move in HighCriticalMoves
+	jr .checkDamage ; if not a high crit move, proceed normally
+
+.HighCriticalMove	; set critical flag for high crit moves
+	ld a, $01
+	ld [wCriticalHitOrOHKO], a
+.checkDamage ; damage calculation part
+	call GetDamageVarsForEnemyAttack
+	call CalculateDamage
+	call AdjustDamageForMoveType
+	xor a ; clear critical move flag
+	ld [wCriticalHitOrOHKO], a; clear critical move flag
+	ld a, [wEnemyMoveEffect]
+	cp TWO_TO_FIVE_ATTACKS_EFFECT ; check for multihit
+	jr z, .multiHit
+	cp TRAPPING_EFFECT ; check for trap(multihit)
+	jr z, .multiHit
+	cp ATTACK_TWICE_EFFECT ; check for double hit
+	jr z, .attackTwice
+	cp TWINEEDLE_EFFECT ; check for double hit
+	jr z, .attackTwice
+	ld a, [wEnemyMoveNum]
+	cp SOLARBEAM ; check for solarbeam
+	jr z, .halfDamSB ; and priorize accordingly
+.checkPlayerHP
+    ld a, [wAIMoveSpamAvoider] ; check for switch this turn
+    cp 2 ; set to two if switched
+    jr z, .loadOldStatus2 ; load old status if yes
+	ld a, [wPlayerBattleStatus2] ; load current status
+.checkSub
+	bit HAS_SUBSTITUTE_UP, a ; does the player have a substitute?
+	jp nz, .checkedSub ; if yes, skip knockout check
+	ld hl, wDamage
+	ld a, [hli] ; high byte
+	ld b, a ; bc is damage
+	ld a, [hl] ; low byte
+	ld c, a; bc is damage
+	or b ; check if there's any damage
+	jr z, .endDamageCalc ; we're done if damage is 0
+	ld a, [wAIMoveSpamAvoider] ; check if player switched this turn
+	cp 2 ; set to two if switched
+	jr z, .useOldHP ; use old HP if switched
+	ld a, [wBattleMonHP + 1] ; low byte 
+	cp c ; substract without carry
+	ld a, [wBattleMonHP]	; high byte
+	sbc b ; substract with carry
+	ret c ; if damage is higher than hp	
+.checkedSub
+	ld a, [wEnemyMoveNum]
+	cp DIG ; check for dig
+	jr z, .halfDam ; and priorize accordingly
+	ld a, [wEnemyMoveEffect]
+	cp FLY_EFFECT ; check for multihit moves
+	jr z, .halfDam ; and priorize accordingly
+	cp HYPER_BEAM_EFFECT ; check for multihit moves
+	jr z, .halfDam ; and priorize accordingly
+.endDamageCalc ; clear carry and return
+	xor a ; clear carry
+	ret
+	
+.loadOldStatus2
+    ld a, [wBuffer + 21] ; load old mon status 2
+    jr .checkSub
+	
+.useOldHP ; if switched use old hp
+	ld a, [wBuffer + 17] ; low byte 
+	cp c ; substract without carry
+	ld a, [wBuffer + 16]	; high byte
+	sbc b ; substract with carry
+	ret c ; if damage is higher than hp	
+	jr .checkedSub
+			
+.multiHit ; multiply by 3 and send to check HP
+	ld hl, wDamage ; store high byte first
+	ld a, [hli]
+	ld b, a
+	ld a, [hl] ; store low byte second
+	sla [hl] ; double low byte
+	dec hl
+	rl [hl] ; double high byte with carry
+	inc hl
+	add a, [hl] ; add low byte
+	ld [hld], a ; store low byte
+	ld a, b
+	adc a, [hl] ; add high byte with carry
+	ld [hl], a ; store high byte
+	jr .checkPlayerHP
+	
+.attackTwice ; multiply by 2 and send to check hp
+	ld hl, wDamage + 1 ; low byte first
+	sla [hl]
+        dec hl ; high byte with carry
+	rl [hl]
+	jr .checkPlayerHP
+	
+.halfDamSB ; divide by 2 and send end calc
+	ld hl, wDamage; high byte first
+        srl [hl]
+        inc hl
+        rr [hl] ; low byte with carry
+	jr .checkPlayerHP
+	
+.halfDam ; divide by 2 and send end calc
+	ld hl, wDamage; high byte first
+        srl [hl]
+        inc hl
+        rr [hl] ; low byte with carry
+	jr .endDamageCalc
+        
+.checkSpecialDamage ; check what special damage we are dealing with
+	ld a, [wEnemyMoveNum]
+	cp SUPER_FANG ; check for super fang
+	jr z, .superFangDam ; jump to calc
+	ld b, SONICBOOM_DAMAGE ; load sonicboom damage for sonicboom
+	cp SONICBOOM ; check for sonicboom
+	jr z, .storeDamageValue ; skip to storing damage
+	ld b, DRAGON_RAGE_DAMAGE ; load dragon rage damage for dragon rage
+	cp DRAGON_RAGE ; check for dragon rage
+	jr z, .storeDamageValue ; skip to storing damage
+	ld hl, wEnemyMonLevel ; else load level for level dependent moves
+	ld a, [hl] ; we need to use hl in storage section
+	ld b, a ; so load into b
+.storeDamageValue
+	ld hl, wDamage ; load damage address, first is high byte
+	xor a ; zero a
+	ld [hli], a ; load 0 into high byte as set damage can never go past 255
+	ld a, b ; load set damage from earlier
+	ld [hl], a ; load damage value into low byte
+	jp .checkPlayerHP	
+        
+.superFangDam
+; set the damage to half the target's HP
+	ld hl, wEnemyMonHP
+	ld de, wDamage
+	ld a, [hli] ; high byte first
+	srl a ; divide by 2
+	ld [de], a ; store high byte
+	inc de
+	ld b, a
+	ld a, [hl] ; low byte second
+	rr a ; divide by 2 with carry
+	ld [de], a ; store low byte
+	or b
+	jp nz, .checkPlayerHP
+; make sure Super Fang's damage is always at least 1
+	ld a, $01
+	ld [de], a
+	jp .checkPlayerHP	
+
+	;end of added section
+
 ; function to tell how effective the type of an enemy attack is on the player's current pokemon
 ; this doesn't take into account the effects that dual types can have
 ; (e.g. 4x weakness / resistance, weaknesses and resistances canceling)
 ; the result is stored in [wTypeEffectiveness]
 ; as far is can tell, this is only used once in some AI code to help decide which move to use
+
+;JOONAS FIXED to check for NO_EFFECT and both types for dual type pokemon.
+;So no more body slams vs gengar because normal is okay vs poison type.
+;Kept backwards compatibility for super effective/not very effective results.
+;The function scales 4x weakness/effectiveness to 2x before returning.
+;needs bc, de, hl and farcall messes up pop/push, so needs to be wrapped on user side!
+
 AIGetTypeEffectiveness:
+    ld a, [wAIMoveSpamAvoider] ; load marker for AI ; set if we switched or healed this turn
+	cp 2 ; set to 2 if we switched
+	jr z, .loadOldTypes ; load old types if we switched
+	ld hl, wBattleMonType ; load player mon types
+.loadEnemyMove
+	ld a, [hli]
+	ld b, a    ; b = type 1 of player mon
+	ld c, [hl] ; c = type 2 of player mon
 	ld a, [wEnemyMoveType]
-	ld d, a                    ; d = type of enemy move
-	ld hl, wBattleMonType
-	ld b, [hl]                 ; b = type 1 of player's pokemon
-	inc hl
-	ld c, [hl]                 ; c = type 2 of player's pokemon
-	; initialize to neutral effectiveness
-	ld a, $10 ; bug: should be EFFECTIVE (10)
-	ld [wTypeEffectiveness], a
+	ld d, a ; d = type of enemy move
+	ld a, $10 ; EFFECTIVE (10), initialize to neutral effectiveness if no pair found
+	ld [wTypeEffectiveness], a ; store this 
 	ld hl, TypeEffects
+	ld e, a ; initialize e to 10 too
 .loop
-	ld a, [hli]
-	cp $ff
-	ret z
-	cp d                      ; match the type of the move
-	jr nz, .nextTypePair1
-	ld a, [hli]
-	cp b                      ; match with type 1 of pokemon
-	jr z, .done
-	cp c                      ; or match with type 2 of pokemon
-	jr z, .done
-	jr .nextTypePair2
+	ld a, [hli] ; load "attacking type" of the current type pair and increase pointer to defending type
+	cp $ff ; we check for rollthrough
+	jr z, .end ; if all values checked, end
+	cp d                      ; else does move type match attacking type?
+	jr nz, .nextTypePair1 ; if not, go try next
+	ld a, [hli] ; load defending type to check and increase pointer to result
+	cp b                      ; does type 1 of defender match "defending type"?
+	jr z, .done ; if yes, done
+	cp c                      ; does type 2 of defender match "defending type"?
+	jr z, .done ; if yes, done
+	jr .nextTypePair2 ; if not check next
+	
+.loadOldTypes
+	ld hl, wAITargetMonType1
+    jr .loadEnemyMove
+	
 .nextTypePair1
-	inc hl
+	inc hl ; advance pointer to result
 .nextTypePair2
-	inc hl
-	jr .loop
+	inc hl ; advance pointer to attacking type of next pair
+	jr .loop ; restart loop
+	
 .done
 	; 40% chance for Lorelei's Dewgong to ignore type effectiveness?
+	; JOONAS: is this the leftover from Yellow rest fix?
 	ld a, [wTrainerClass]
 	cp LORELEI
 	jr nz, .ok
@@ -5583,10 +5913,36 @@ AIGetTypeEffectiveness:
 	cp DEWGONG
 	jr nz, .ok
 	call BattleRandom
-	cp $66 ; 40 percent
+	cp $66 ; 40 percent; JOONAS: not 40% anymore with both types checked
+	; now it's likely 64% but have not checked that code and we probably don't care
 	ret c
 .ok
-	ld a, [hl]
+	ld a, [hli] ; load result and increase to next pair attacking type
+	and a ; check for NO_EFFECT
+	jr z, .noEffect ; end loop if found
+	cp SUPER_EFFECTIVE ; check for super effective
+	jr z, .multiply ; go to multiply by 2 if found
+.divide
+	srl e ; else divide by two, because table only has not very effective left
+	; don't need this anymore as old nothing checks for this in new routine
+;	jr nc, .loop ; if we didn't go below 5, start loop again to check for dual types
+;	rl e ; else we multiply by two to go back to 5
+	;as old code relying on this function checks for 5 and 20, not less or more
+	jr .loop ; start new loop to check for dual types
+	
+.multiply
+	sla e ; multiply by 2
+; a, e ; don't need this part anymore as nothing checks for this in new routine
+;	cp 40 ; check if we have 4x effective
+;	jr nz, .loop ; if not start new loop to check for dual types
+;	srl e ; else we scale back to 20
+	;as old code relying on this function checks for 5 and 20, not less or more
+	jr .loop ; start new loop to check for dual types
+	
+.noEffect
+	ld e, a ; store damage multiplier
+.end
+	ld a, e ; load damage multiplier
 	ld [wTypeEffectiveness], a ; store damage multiplier
 	ret
 
@@ -6886,6 +7242,8 @@ ApplyBadgeStatBoosts:
     jr nz, .continue ; times by 1.25 if its Pikachu
 	srl d
 	rr e
+;	srl d ;nerfs badge boosts to 1.06125, comment this back if enabling badge boosts again to balance the game a bit, speed is especially bad
+;	rr e ;nerfs badge boosts to 1.06125, comment this back if enabling badge boosts again to balance the game a bit, speed is especially bad
 .continue
 	ld a, [hl]
 	add e
