@@ -11,6 +11,7 @@ Pokemon availability changes:
 - Celadon Mansion now has Porygon instead of Eevee
 - Game corner now sells Magmar(1500), Electabuzz(2000), Mr Mime(2500), Dratini(5000),  Eevee(9999), Porygon(3000)
 - Eevee as starter(but cries and animations not changed)
+- Starter can evolve if you meet the criteria(removes the on map pokemon)
 
 Move changes:
 - Dragon type moves are now treated as physical attacks
