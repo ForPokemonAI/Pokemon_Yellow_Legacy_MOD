@@ -1,3 +1,43 @@
+# Mod of Pokemon Yellow Legacy
+
+Pokemon Yellow Legacy is fantastic but it could be better. I reworked the AI to not be an idiot, changed the Pokemon availability to follow their environmental typing while trying to make ecological sense, switched dragon to be physical and balanced the lategame a bit.
+
+Pokemon availability changes:
+- Encounter tables changed to follow pokemon environment typing
+- Surfing tables changed to follow watertypes
+- Fishing rods changed so all rods have location dependent encounter tables
+- Magikarp from salesman now costs 5k instead of 500
+- Mr Mime trader now wants Abra instead of Clefairy
+- Celadon Mansion now has Porygon instead of Eevee
+- Game corner now sells Magmar(1500), Electabuzz(2000), Mr Mime(2500), Dratini(5000),  Eevee(9999), Porygon(3000)
+- Eevee as starter(but cries and animations not changed)
+
+Move changes:
+- Dragon type moves are now treated as physical attacks
+- Night shade now has 75 base power and secondary lower attack effect
+
+Learnset changes:
+- Bellsprout starts with constrict and growth instead of vine whip/growth
+- Bellsprout learns poisonpowder at 7, vine whip at 13
+- Ekans learns poison sting at 5
+- Krabby starts with bubble instead of bubble/leer
+- Krabby learns tackle at 7, leer at 11, sharpen at 16
+- Growlithe starts with bite and growl instead of bite/roar
+- Growlithe learns lick at 7, roar at 12, agility at 42
+- Arcanine now has the same learnset as Growlithe
+- Psyduck/Golduck now learn fury swipes at 33(level up)
+
+Balance changes:
+- Shift setting no declares what pokemon the enemy is going to use
+- Badge boosts removed completely
+- Stat EXP effect halved
+- Completely reworked AI routine that does not cheat.
+
+Miscellaneous fixes:
+- Pokedex pokemon area overflow fix so it no longer inverts colours
+
+Below is the original description of the Yellow legacy hack and below that you can find the detailed AI routine changes if you want to spoil yourself or are interested in it itself.
+
 # Pokémon Yellow Legacy
 
 The Yellow Legacy project is the prequel to [Crystal Legacy](https://github.com/cRz-Shadows/Pokemon_Crystal_Legacy) by content creator Patrick Smith ([TheSmithPlays](https://www.youtube.com/@TheSmithPlays)), and the second project in his planned Legacy series. It is based on [the Pokémon Yellow Disassembly](https://github.com/pret/pokeyellow). The Legacy project is focused on changing the base game in a way that adds quality of life additions and better balancing with the benefit of twenty years of hindsight. The primary goal of each mod is to keep the original feeling of the game while still making meaningful improvements for the player. This means that certain idiosyncrasies of the first generation of Pokémon games will remain, as they are considered an essential aspect to the core experience.
@@ -181,3 +221,51 @@ These videos also provide an overview of the hack and the ideology behind it:
 [irc]: https://web.libera.chat/?#pret
 [ci]: https://github.com/pret/pokeyellow/actions
 [ci-badge]: https://github.com/pret/pokecrystal/actions/workflows/main.yml/badge.svg
+
+
+
+# AI changes:
+- AI that does not:
+    -Cheat upon switch out or switch in
+    -Cheat with knowing the exact damage a move will do
+    -Use moves with no effect
+    -Try to hit flying/digging opponents
+    -Use moves the player pokemon is immune to for any reason
+    -Buff/debuff if already at full stack
+    -Use substitute if too low hp
+    -Use explosion moves if player pokemon is frozen
+    -Use status moves if the player pokemon already has a relevant status, confusion,
+- AI that:
+    -Tries to knock out immediately if possible
+    -Has a knockout prioritization routine that takes into account accuracy, quick attack, swift, hp drain, charge, etc.
+    -Uses spore if it has it
+    -Buffs speed if slower
+    -Paralyzes opponent if slower
+    -Uses dream eater if player pokemon is asleep
+    -Has an explosion prioritization routine scaling with hp, speed and whether it knocks out the player pokemon or not
+    -Currently set to use Bide as it's opener to make Brock easier as a trapping Onix is insane in the early game.
+    -Tries to use trapping moves if faster
+    -Has a status move prioritization routine that takes into account speed, status move effect and AI pokemon hp
+    -Has a buff/debuff routine routine that takes into account speed, status move effect and AI pokemon hp
+    -Knows which of its moves does most damage to the player pokemon, accounts for charge, multihit, recharge moves
+    -Does not like to use lower damaging moves unless otherwise relevant
+    -Does not like to use Counter below 50% hp
+    -Does not like to use Bide below 100% hp
+- Possible issues/improvements:
+    -Does not differentiate if a move is guaranteed to knock out or a range
+    -Does not have a specific debuff routine, instead this is together with the buff routine
+    -Is not forced to use quick attack if slower and low on hp
+    -Does not prioritize moves with side effects, just looks at the damage they do
+    -There is an edge case where the AI predicts player pokemon switch out in case it had max debuff applied but as it is so rare it is not addressed.
+    -There is an edge case with quick attack being the best damaging move and not being chosen that is not encountered in the game and thus not addressed.
+- It consists of six AI ranking routines:
+    -Idiot routine, that stops the AI from using moves that do nothing
+    -Damage routine, that tells the AI not to like using moves that do less damage than it's best move and KO if it can
+    -Buff routine, that gives different priorities to buff and debuff moves depending on the situation
+    -Explosion routine, that gives different priorities to explosion moves depending on the situation
+    -Status routine, that gives different priorities to status/heal only moves depending on the situation
+    -Trap routine, that tells the AI to use trapping moves if it's faster
+
+The six routines work alongside each other to create the move priorities and thus it is recommended to run with all of them on for most trainers. They can be mixed and matched, nothing will break, but the end results might be suboptimal. So you can have trainers that know not to use worse damaging moves than their main one but still be stupid enough to use buffs when they are at 1% hp, for example.
+
+The exception to this is the idiot routine, 1. It has to be on at all times, for all trainers. Otherwise none of the other routines will make sense. If you want an early game trainer class with random but not idiotic decisions, give them just the idiot routine and nothing else. They will then randomly pick amongst any move that does something.
