@@ -29,7 +29,7 @@ Learnset changes:
 - Psyduck/Golduck now learn fury swipes at 33(level up)
 
 Balance changes:
-- Shift setting no declares what pokemon the enemy is going to use
+- Shift setting no longer declares what pokemon the enemy is going to use
 - Badge boosts removed completely
 - Stat EXP effect halved
 - Completely reworked AI routine that does not cheat.
