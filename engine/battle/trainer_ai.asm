@@ -756,11 +756,13 @@ AIMoveChoiceModification2:
     jr .lowerPreference ; else lower preference
 
 .preferSpeed ; this will make this a very preferred move, only behind spore
-	ld a, [hl]
+    call CompareSpeedBuff ; we check if AI mon will be slower even after buff
+    jr c, .lowerPreference ; if it is, we tell it not to use speed boost
+	ld a, [hl] ; else we tell it to use it
 	sub $11 ; 16 in dec, -18
 	ld [hl], a
 	jr .preferMove2 ; if AI mon is slower we tell it to use speedboost
-    
+       
 
 Modifier2PreferredMoves: ; these should be further split into buff/debuff, special and strong/weak moves, but this will do for now
 	db LEECH_SEED_EFFECT ; do we want this here?
@@ -990,6 +992,39 @@ CompareSpeed:
 .switchSpeed
 	ld de, wBuffer + 25 ; high byte first
 	jr .compareSpeed
+	
+CompareSpeedBuff:
+	push hl
+	push de
+	push bc
+	ld hl, wEnemyMonSpeed; low byte first
+	ld a, [hli]
+	sla a; double
+	ld d, a ; low byte to d
+	ld a, [hl]
+	rl a; double with carry
+    ld e, a ; high byte goes to e, de is now AI mon speed doubled
+	ld a, [wAIMoveSpamAvoider] ; check if player switched
+	cp 2 ; set to two if switched
+	jr z, .switchSpeed
+	ld hl, wBattleMonSpeed + 1 ; first high byte
+.compareSpeed; check if current speed is higher than the target's
+	ld a, [hld]
+	ld b, a; b is player mon high byte
+	ld a, e ; is ai mon high byte
+	sub b ; substract
+	ld a, [hl]
+	ld b, a
+	ld a, d
+	sbc b ; carry flag set if player mon is faster(cleared if slower or speedtie)
+	pop bc
+	pop de
+	pop hl
+	ret
+	
+.switchSpeed
+	ld de, wBuffer + 25 ; high byte first
+	jr .compareSpeed	
 	
 ;;;;;;;;;;
 
