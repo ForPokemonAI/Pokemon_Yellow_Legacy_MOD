@@ -272,3 +272,5 @@ The six routines work alongside each other to create the move priorities and thu
 The exception to this is the idiot routine, 1. It has to be on at all times, for all trainers. Otherwise none of the other routines will make sense. If you want an early game trainer class with random but not idiotic decisions, give them just the idiot routine and nothing else. They will then randomly pick amongst any move that does something.
 
 The required changes for AI are in /engine/battle/trainer_ai.asm, /data/trainers/move_choices.asm and parts of /engine/battle/core.asm
+
+Feel free to use all my work for yourself. I hold no license to this.
