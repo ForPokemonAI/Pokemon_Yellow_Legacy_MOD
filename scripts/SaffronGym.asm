@@ -141,9 +141,9 @@ SaffronGymSabrinaText:
 	call SaveEndBattleTextPointers
 	farcall GetBadgesObtained
 	ld a, [wNumSetBits]
-	cp 5
-	jr nc, .Sabrina6thGym
-	jr .Sabrina5thGym
+	cp 6
+	jr nc, .Sabrina7thGym
+	jr .Sabrina6thGym
 .todone
 	jr .done
 .SabrinaRematch
@@ -168,7 +168,7 @@ SaffronGymSabrinaText:
 	ld hl, .PreBattleRematchRefusedText
 	call PrintText
 	jr .done
-.Sabrina5thGym
+.Sabrina7thGym
 	call Delay3
 	ld a, OPP_SABRINA
 	ld [wCurOpponent], a

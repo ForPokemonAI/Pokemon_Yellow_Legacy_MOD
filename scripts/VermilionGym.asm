@@ -129,14 +129,14 @@ VermilionGymLTSurgeText:
 	jr nz, .got_tm24_already
 	call z, VermilionGymLTSurgeReceiveTM24Script
 	call DisableWaitingAfterTextDisplay
-	jr .text_script_end
+	jp .text_script_end
 .got_tm24_already
 	ld a, [wGameStage] ; Check if player has beat the game
 	and a
-	jr nz, .SurgeRematch
+	jp nz, .SurgeRematch
 	ld hl, .PostBattleAdviceText
 	call PrintText
-	jr .text_script_end
+	jp .text_script_end
 .before_beat
 	ld hl, .PreBattleText
 	call PrintText
@@ -146,10 +146,63 @@ VermilionGymLTSurgeText:
 	ld hl, VermilionGymLTSurgeReceivedThunderBadgeText
 	ld de, VermilionGymLTSurgeReceivedThunderBadgeText
 	call SaveEndBattleTextPointers
+	farcall GetBadgesObtained
+	ld a, [wNumSetBits]
+	cp 6
+	jr nc, .Surge7thGym
+	cp 5
+	jr nc, .Surge6thGym
+	cp 4
+	jr nc, .Surge5thGym
+	cp 3
+	jr nc, .Surge4thGym
+	jr .Surge3thGym
+.Surge7thGym
+	call Delay3
+	ld a, OPP_ERIKA
+	ld [wCurOpponent], a
+	ld a, 6
+	ld [wTrainerNo], a
+	ld a, $4 ; new script
+	ld [wCeladonGymCurScript], a
+	ld [wCurMapScript], a
+	jr .afterBatttle
+.Surge6thGym
+	call Delay3
+	ld a, OPP_ERIKA
+	ld [wCurOpponent], a
+	ld a, 5
+	ld [wTrainerNo], a
+	ld a, $4 ; new script
+	ld [wCeladonGymCurScript], a
+	ld [wCurMapScript], a
+	jr .afterBatttle
+.Surge5thGym
+	call Delay3
+	ld a, OPP_ERIKA
+	ld [wCurOpponent], a
+	ld a, 4
+	ld [wTrainerNo], a
+	ld a, $4 ; new script
+	ld [wCeladonGymCurScript], a
+	ld [wCurMapScript], a
+	jr .afterBatttle
+.Surge4thGym
+	call Delay3
+	ld a, OPP_ERIKA
+	ld [wCurOpponent], a
+	ld a, 3
+	ld [wTrainerNo], a
+	ld a, $4 ; new script
+	ld [wCeladonGymCurScript], a
+	ld [wCurMapScript], a
+	jr .afterBatttle
+.Surge3thGym
 	ldh a, [hSpriteIndex]
 	ld [wSpriteIndex], a
 	call EngageMapTrainer
 	call InitBattleEnemyParameters
+.afterBatttle
 	ld a, $3
 	ld [wGymLeaderNo], a
 	xor a
