@@ -33,6 +33,7 @@ Balance changes:
 - Badge boosts removed completely
 - Stat EXP effect halved
 - Completely reworked AI routine that does not cheat.
+- Gyms levelup as you gain badges
 
 Miscellaneous fixes:
 - Pokedex pokemon area overflow fix so it no longer inverts colours
