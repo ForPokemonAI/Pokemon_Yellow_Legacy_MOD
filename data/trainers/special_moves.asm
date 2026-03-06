@@ -46,6 +46,10 @@ SpecialTrainerMoves:
 	db 6, 4, THUNDERBOLT
 	db 0
 
+	db MISTY, 3 ; 	db $FF, 22, PSYDUCK, 21, GOLDEEN, 23, HORSEA, 24, STARMIE, 0
+	db 2, 2, TAIL_WHIP
+	db 0
+	
 	db LT_SURGE, 1 ; db $FF, 29, RAICHU, 0
 	db 1, 1, THUNDERBOLT
 	db 1, 2, THUNDER_WAVE
@@ -69,6 +73,67 @@ SpecialTrainerMoves:
 	db 6, 3, THUNDER
 	db 6, 4, THUNDER_WAVE
 	db 0
+
+	db LT_SURGE, 3 ;db $FF, 35, ELECTABUZZ, 40, RAICHU, 0
+	db 1, 1, THUNDERPUNCH
+	db 1, 2, SCREECH
+	db 1, 3, THUNDER_WAVE
+	db 1, 4, SUBMISSION
+	db 2, 1, THUNDERBOLT
+	db 2, 2, AGILITY
+	db 2, 3, BODY_SLAM
+	db 2, 4, SURF
+	db 0	
+	
+	db LT_SURGE, 4 ; db $FF, 43, ELECTABUZZ, 48, RAICHU, 0
+	db 1, 1, THUNDERBOLT
+	db 1, 2, SCREECH
+	db 1, 3, THUNDER_WAVE
+	db 1, 4, SUBMISSION
+	db 2, 1, THUNDER
+	db 2, 2, AGILITY
+	db 2, 3, BODY_SLAM
+	db 2, 4, SURF
+	db 0	
+	
+	db LT_SURGE, 5 ; db $FF, 48, MAGNETON, 48, ELECTRODE, 50, ELECTABUZZ, 55, RAICHU, 
+	db 1, 1, THUNDERBOLT
+	db 1, 2, REFLECT
+	db 1, 3, THUNDER_WAVE
+	db 1, 4, TRI_ATTACK
+	db 2, 1, THUNDERBOLT
+	db 2, 2, LIGHT_SCREEN
+	db 2, 3, EXPLOSION
+	db 2, 4, SWIFT
+	db 3, 1, THUNDERBOLT
+	db 3, 2, SCREECH
+	db 3, 3, PSYCHIC_M
+	db 3, 4, SUBMISSION
+	db 4, 1, THUNDERBOLT
+	db 4, 2, AGILITY
+	db 4, 3, BODY_SLAM
+	db 4, 4, SURF
+	db 0	
+	
+	db LT_SURGE, 6 ; db $FF, 50, MAGNETON, 50, ELECTRODE, 53, ELECTABUZZ, 58, RAICHU, 0
+	db 1, 1, THUNDER
+	db 1, 2, REFLECT
+	db 1, 3, THUNDER_WAVE
+	db 1, 4, TRI_ATTACK
+	db 2, 1, THUNDER
+	db 2, 2, LIGHT_SCREEN
+	db 2, 3, EXPLOSION
+	db 2, 4, SWIFT
+	db 3, 1, THUNDERBOLT
+	db 3, 2, SCREECH
+	db 3, 3, PSYCHIC_M
+	db 3, 4, SUBMISSION
+	db 4, 1, THUNDERBOLT
+	db 4, 2, AGILITY
+	db 4, 3, BODY_SLAM
+	db 4, 4, SURF
+	db 0
+	
 
 	db ERIKA, 1 ; db $FF, 33, TANGELA, 34, VICTREEBEL, 31, IVYSAUR, 35, VILEPLUME, 0
 	db 1, 1, BIND
@@ -116,6 +181,16 @@ SpecialTrainerMoves:
 	db 6, 2, LEECH_SEED
 	db 6, 3, SUBSTITUTE
 	db 6, 4, MEGA_DRAIN
+    db 0
+
+	db ERIKA, 5 ; db $FF, 51, TANGELA, 52, VICTREEBEL, 51, VENUSAUR, 52, EXEGGUTOR, 53, VILEPLUME, 0
+	db 1, 2, STUN_SPORE
+    db 1, 3, SOLARBEAM
+    db 2, 4, SWORDS_DANCE
+    db 3, 2, SOLARBEAM
+    db 3, 3, LEECH_SEED
+    db 4, 1, REFLECT
+    db 5, 1, LEECH_SEED
     db 0
 
 	db KOGA, 1 ; 42, GOLBAT, 42, MUK, 41, TENTACRUEL, 43, VENOMOTH, 0
@@ -212,14 +287,18 @@ SpecialTrainerMoves:
 	db 5, 1, THUNDER_WAVE
 	db 0
 
-	db SABRINA, 2 ; db $FF, 43, ABRA,  42, MR_MIME, 43, KADABRA,  43, ALAKAZAM, 0
+	db SABRINA, 2 ; db $FF, 53, ABRA,  51, HYPNO, 52, MR_MIME, 53, KADABRA,  53, ALAKAZAM, 0
 	db 1, 1, PSYCHIC_M
-	db 2, 1, LIGHT_SCREEN
-	db 2, 2, MIMIC
-	db 2, 3, SUBSTITUTE
-	db 2, 4, PSYCHIC_M
-	db 3, 1, PSYWAVE
-	db 4, 1, THUNDER_WAVE
+	db 2, 2, PSYWAVE
+	db 3, 1, LIGHT_SCREEN
+	db 3, 2, MIMIC
+	db 4, 3, PSYCHIC_M
+	db 4, 4, PSYWAVE 
+	db 4, 1, REFLECT
+	db 4, 2, PSYWAVE
+	db 4, 3, PSYCHIC_M
+	db 4, 4, RECOVER 
+	db 5, 1, PSYWAVE
 	db 0
 
 	db SABRINA, 3 ; db $FF, 65, MR_MIME, 64, HYPNO, 64, SLOWBRO, 64, JYNX, 64, GENGAR, 65, ALAKAZAM, 0
