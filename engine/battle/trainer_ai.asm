@@ -1,6 +1,11 @@
 ; creates a set of moves that may be used and returns its address in hl
 ; unused slots are filled with 0, all used slots may be chosen with equal probability
 AIEnemyTrainerChooseMoves:
+    ld a, [wDamage] ; store current damage value high byte
+    ld b, a ; into b
+    ld a, [wDamage + 1] ; store current damage value low byte
+    ld c, a ; into c
+    push bc ; onto stack
 	ld a, $15 ; give all moves a value of 21 to begin with
 	ld hl, wBuffer ; init temporary move selection array. Only the moves with the lowest numbers are chosen in the end
 	ld [hli], a   ; move 1
@@ -123,6 +128,11 @@ AIEnemyTrainerChooseMoves:
 	ld hl, wEnemyMonMoves    ; use original move set
 .done
 ;;;;;;;;;; PureRGBnote: clear these values at the end of an AI cycle, they only apply when the player has switched or healed in a turn
+    pop bc ; restore damage from stack
+    ld a, c ; low byte
+    ld [wDamage + 1], a ; c into low byte
+    ld a, b ; high byte
+    ld [wDamage], a ; b into high byte
 	xor a
 ;	ld [wAIMoveSpamAvoider], a ; has to be reset on the core side to take locked turns into account
 	; ld [wAITargetMonStatus], a
@@ -147,8 +157,6 @@ AIEnemyTrainerChooseMoves:
     ld [wBuffer + 12], a ; we borrow this for storing the KO explosion move ID
 	ld [wHPBarNewHP], a ; we borrow this to store the highest damage
 	ld [wHPBarNewHP + 1], a; we borrow this to store the highest damage
-	ld [wDamage], a ; we borrow this to store the damage calcs
-	ld [wDamage + 1], a ; we borrow this to store the damage calcs
     ld [wBuffer + 19], a ; reset marker for AI calculation
     
 ;;;;;;;;;;
