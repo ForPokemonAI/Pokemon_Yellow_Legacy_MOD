@@ -450,9 +450,9 @@ AIMoveChoiceModification1:
 	ld a, [wPlayerBattleStatus2] ; cheaper to do this here since we have to load the status for mist anyway
 .checkStat2
 	bit HAS_SUBSTITUTE_UP, a ; We first check for player mon substitute
-	jp nz, .discourage ; if it is, discourage
+	jp nz, .protectedFromStatMoves ; if it is, discourage
 	bit PROTECTED_BY_MIST, a ; is playermon protected by mist?
-	jp nz, .discourage ; if it is, discourage, else continue
+	jp nz, .protectedFromStatMoves ; if it is, discourage, else continue
 	ld hl, wPlayerMonStatMods ; it is SO rare for AI to spam you to minus 6, that predicting a shift is probably OK
 	ld bc, wPlayerBattleStatus1
 	ld de, wEnemyMoveEffect
@@ -467,7 +467,7 @@ AIMoveChoiceModification1:
 	add hl, bc
 	ld b, [hl]
 	dec b ; dec corresponding stat mod
-        pop bc
+    pop bc
 	pop de
 	pop hl ; release full wrap
 	jp z, .discourage ; if at full debuff(0), don't try to debuff more
@@ -476,7 +476,13 @@ AIMoveChoiceModification1:
 .checkOldStatus2	
 	ld a, [wBuffer + 21] ; cheaper to do this here since we have to load the status for mist anyway
     jr .checkStat2
-	
+    
+.protectedFromStatMoves
+    pop bc
+	pop de
+	pop hl ; release full wrap
+	jp .discourage
+    	
 .checkDisabled
 	ld a, [wPlayerDisabledMove] ; non-zero if the player mon has a disabled move
 	and a ; check for zero
@@ -2111,35 +2117,35 @@ StoreBattleMonTypes:
 	pop hl
 	ret
 
-; Used by the pureRGB AI
+; Used by the pureRGB AI, not in use anymore
 ;shinpokerednote: ADDED: doubles attack if burned or quadruples speed if paralyzed.
 ;It's meant to be run right before healing paralysis or burn so as to 
 ;undo the stat changes.
-UndoBurnParStats:
-	ld hl, wBattleMonStatus
-	ld de, wPlayerStatsToDouble
-	ldh a, [hWhoseTurn]
-	and a
-	jr z, .checkburn
-	ld hl, wEnemyMonStatus
-	ld de, wEnemyStatsToDouble
-.checkburn
-	ld a, [hl]		;load statuses
-	and 1 << BRN	;test for burn 
-	jr z, .checkpar
-	ld a, $01
-	ld [de], a	;set attack to be doubled to undo the stat change of BRN
-	call DoubleSelectedStats
-	jr .return
-.checkpar
-	ld a, [hl]		;load statuses
-	and 1 << PAR	;test for paralyze 
-	jr z, .return
-	ld a, $04
-	ld [de], a	;set speed to be doubled (done twice) to undo the stat change of BRN
-	call DoubleSelectedStats
-	call DoubleSelectedStats
-.return
-	xor a
-	ld [de], a	;reset the stat change bits
-	ret
+;UndoBurnParStats:
+;	ld hl, wBattleMonStatus
+	;ld de, wPlayerStatsToDouble
+	;ldh a, [hWhoseTurn]
+	;and a
+	;jr z, .checkburn
+	;ld hl, wEnemyMonStatus
+	;ld de, wEnemyStatsToDouble
+;.checkburn
+	;ld a, [hl]		;load statuses
+	;and 1 << BRN	;test for burn 
+	;jr z, .checkpar
+	;ld a, $01
+	;ld [de], a	;set attack to be doubled to undo the stat change of BRN
+	;call DoubleSelectedStats
+	;jr .return
+;.checkpar
+	;ld a, [hl]		;load statuses
+	;and 1 << PAR	;test for paralyze 
+	;jr z, .return
+	;ld a, $04
+	;ld [de], a	;set speed to be doubled (done twice) to undo the stat change of BRN
+	;call DoubleSelectedStats
+	;call DoubleSelectedStats
+;.return
+	;xor a
+	;ld [de], a	;reset the stat change bits
+	;ret
