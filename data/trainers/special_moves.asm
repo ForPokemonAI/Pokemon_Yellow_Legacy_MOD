@@ -45,10 +45,6 @@ SpecialTrainerMoves:
 	db 6, 3, RECOVER
 	db 6, 4, THUNDERBOLT
 	db 0
-
-	db MISTY, 3 ; 	db $FF, 22, PSYDUCK, 21, GOLDEEN, 23, HORSEA, 24, STARMIE, 0
-	db 2, 2, TAIL_WHIP
-	db 0
 	
 	db LT_SURGE, 1 ; db $FF, 29, RAICHU, 0
 	db 1, 1, THUNDERBOLT
